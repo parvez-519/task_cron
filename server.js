@@ -14,11 +14,19 @@ const { Op, DATEONLY } = require("sequelize");
 const { json } = require("body-parser");
 const { DATE } = require("sequelize");
 
+// GETTING TODAY'S DATE
 var dateObj = new Date();
 console.log(dateObj);
-var onlyDate=dateObj.getFullYear() + "-" +(dateObj.getMonth()+1) + "-" +dateObj.getDate()
-console.log("---only date---",onlyDate)
+// STORING DATE ONLY IN DIFFERENT VARIABLE
+var onlyDate =
+  dateObj.getFullYear() +
+  "-" +
+  (dateObj.getMonth() + 1) +
+  "-" +
+  dateObj.getDate();
+console.log("---only date---", onlyDate);
 
+// CHECK() WILL FIND COMPARE AND THEN DELETE USING CRON
 async function check() {
   const dates = await userRepo.findAll({
     where: {},
@@ -31,22 +39,27 @@ async function check() {
     const newDate = new Date(dateValue);
     const numOfHours = 5.5;
     newDate.setTime(newDate.getTime() + numOfHours * 60 * 60 * 1000);
-    let oDate=newDate.getFullYear() + "-" +(newDate.getMonth()+1) + "-" +newDate.getDate()
+    let oDate =
+      newDate.getFullYear() +
+      "-" +
+      (newDate.getMonth() + 1) +
+      "-" +
+      newDate.getDate();
     console.log(newDate);
     console.log(oDate);
-    if(oDate===onlyDate)
-    {
-      //  cron.schedule("0 0 * * *", () => {
-      cron.schedule(" */2 * * * * *", () => {
-          console.log("-----inside cron-----")
-          userRepo.destroy({
-            where: {
-              expire: {
-                [Op.eq]: newDate,
-              },
+    if (oDate === onlyDate) {
+      // SCHEDULED EVERYDAY 12 AM
+      cron.schedule("0 0 * * *", () => {
+        // cron.schedule(" */2 * * * * *", () => {    // SCHEDULED EVERY TWO SECONDS
+        console.log("-----inside cron-----");
+        userRepo.destroy({
+          where: {
+            expire: {
+              [Op.eq]: newDate,
             },
-          });
+          },
         });
+      });
     }
   }
 }
@@ -62,5 +75,4 @@ async function init() {
 }
 
 check();
-
 init();

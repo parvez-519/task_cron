@@ -42,7 +42,7 @@ async function check() {
           userRepo.destroy({
             where: {
               expire: {
-                [Op.lte]: newDate,
+                [Op.eq]: newDate,
               },
             },
           });

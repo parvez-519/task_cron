@@ -10,9 +10,7 @@ app.use(cors());
 app.use("/", router);
 const cron = require("node-cron");
 const userRepo = require("./api/entities/user");
-const { Op, DATEONLY } = require("sequelize");
-const { json } = require("body-parser");
-const { DATE } = require("sequelize");
+const { Op } = require("sequelize");
 
 // GETTING TODAY'S DATE
 var dateObj = new Date();

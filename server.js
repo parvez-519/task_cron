@@ -26,6 +26,7 @@ console.log("---only date---", onlyDate);
 
 // CHECK() WILL FIND COMPARE AND THEN DELETE USING CRON
 async function check() {
+  cron.schedule("0 0 * * *", async () => {
   const dates = await userRepo.findAll({
     where: {},
     attributes: {
@@ -33,6 +34,7 @@ async function check() {
     },
   });
   for (let date of dates) {
+    console.log("------for loop----",date.expire);
     const dateValue = Object.values(JSON.parse(JSON.stringify(date)));
     const newDate = new Date(dateValue);
     const numOfHours = 5.5;
@@ -47,19 +49,18 @@ async function check() {
     console.log(oDate);
     if (oDate === onlyDate) {
       // SCHEDULED EVERYDAY 12 AM
-      cron.schedule("0 0 * * *", () => {
         // cron.schedule(" */2 * * * * *", () => {    // SCHEDULED EVERY TWO SECONDS
         console.log("-----inside cron-----");
         userRepo.destroy({
           where: {
             expire: {
-              [Op.eq]: newDate,
+              [Op.lte]: newDate,
             },
           },
         });
-      });
+      }
     }
-  }
+  });
 }
 
 async function init() {
